@@ -1,0 +1,54 @@
+🚩 The Problem Without Transactions
+Imagine you’re building an application that interacts with a database. You often perform multiple steps that must succeed together. Without transactions, you face these issues:
+
+Partial updates  
+Example: In a bank transfer, you debit ₹1000 from Account A but fail to credit Account B due to an error.
+→ Account A loses money, Account B never receives it. Database is inconsistent.
+
+Data inconsistency  
+If one part of an operation succeeds and another fails, your data no longer follows business rules.
+Example: An order is marked “paid” but the payment record never saved.
+
+Concurrency problems  
+Multiple users may update the same data at the same time. Without isolation, one user’s changes can overwrite another’s or read half-done updates.
+
+Error handling complexity  
+You’d have to manually code rollback logic for every failure scenario, which is error-prone and messy.
+
+✅ Why Transactions Solve This
+Transactions group multiple operations into a single unit of work:
+
+Either all succeed → commit.
+
+Or any fail → rollback everything.
+
+This ensures:
+
+Atomicity → no partial updates.
+
+Consistency → rules are preserved.
+
+Isolation → safe concurrent access.
+
+Durability → committed changes survive crashes.
+
+📘 Simple Example
+Without transaction:
+
+java
+public void transferMoney(Long fromId, Long toId, double amount) {
+    debit(fromId, amount);   // succeeds
+    credit(toId, amount);    // fails
+    // Database is inconsistent!
+}
+With transaction (@Transactional):
+
+java
+@Transactional
+public void transferMoney(Long fromId, Long toId, double amount) {
+    debit(fromId, amount);
+    credit(toId, amount);
+    // If credit fails, debit is rolled back automatically
+}
+🎯 Problem Statement in One Line
+We need transactions because real-world operations involve multiple steps that must succeed or fail together. Without them, we risk data corruption, inconsistency, and concurrency issues.
