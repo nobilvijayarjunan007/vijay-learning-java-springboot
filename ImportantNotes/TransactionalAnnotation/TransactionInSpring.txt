@@ -1,0 +1,41 @@
+🌱 Why Do We Need Transactions in Spring?
+In any application that interacts with a database, you often perform multiple operations that must succeed or fail together.
+Without transactions:
+
+If one operation fails, others may still persist, leaving the database in an inconsistent state.
+
+Example: deducting money from one account but failing to credit another.
+
+Spring provides declarative transaction management using the @Transactional annotation, so you don’t have to manually handle commit and rollback.
+
+🔖 What Does @Transactional Do?
+It tells Spring that the method should run inside a transactional context.
+
+If everything succeeds → Spring commits the transaction.
+
+If an exception occurs → Spring rolls back the transaction.
+
+You can configure propagation, isolation, rollback rules, etc.
+
+📘 Basic Example
+java
+@Service
+public class BankService {
+
+    @Autowired
+    private AccountRepository accountRepository;
+
+    @Transactional
+    public void transferMoney(Long fromId, Long toId, double amount) {
+        Account from = accountRepository.findById(fromId).get();
+        Account to = accountRepository.findById(toId).get();
+
+        from.debit(amount);   // deduct money
+        to.credit(amount);    // add money
+
+        accountRepository.save(from);
+        accountRepository.save(to);
+        // If any exception occurs here, the whole transaction rolls back
+    }
+}
+👉 If debit() succeeds but credit() fails, the transaction ensures both changes are rolled back — preventing inconsistent balances.
