@@ -1,0 +1,59 @@
+🔑 ACID Principles Explained
+1. Atomicity → All or Nothing
+Meaning: A transaction is indivisible. Either every step succeeds, or none of them happen.
+
+Example: You transfer ₹1000 from Account A to Account B.
+
+Debit A by ₹1000 ✅
+
+Credit B by ₹1000 ✅
+
+If credit fails, debit is also rolled back.
+
+Result: Either both succeed or both fail — no half-done transfer.
+
+2. Consistency → Valid State Before and After
+Meaning: Transactions must leave the database in a consistent state, following all rules.
+
+Example:
+
+Rule: Total money in the system must remain constant.
+
+Before transfer: A = ₹5000, B = ₹2000 → Total = ₹7000
+
+After transfer: A = ₹4000, B = ₹3000 → Total = ₹7000
+
+Consistency ensures rules are respected.
+
+3. Isolation → No Interference
+Meaning: Transactions run independently, as if they are alone.
+
+Example:
+
+Two people transfer money at the same time.
+
+Isolation ensures one transaction doesn’t “see” the partial work of the other.
+
+Without isolation, both might read the same balance and cause overdrafts.
+
+4. Durability → Permanent Once Committed
+Meaning: Once a transaction is committed, it survives crashes, power failures, etc.
+
+Example:
+
+You transfer ₹1000 and get a “Success” message.
+
+Even if the server crashes right after, the database keeps the updated balances.
+
+Durability ensures committed changes are not lost.
+
+🏦 Putting It All Together (Bank Example)
+Imagine transferring money:
+
+Atomicity → Debit + Credit happen together.
+
+Consistency → Total money remains the same.
+
+Isolation → Other transfers don’t mess with yours.
+
+Durability → Once done, it’s permanent.
