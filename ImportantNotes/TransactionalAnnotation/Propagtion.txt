@@ -1,0 +1,209 @@
+Transaction Propagation:
+1. REQUIRED (Default One)
+2. SUPPORT
+3. MANDATORY
+4. REQUIRES_NEW
+5. NOT_SUPPORTED
+6. NEVER
+7. NESTED
+
+======================Propagation.REQUIRED=======================
+EX:1.
+@Transactional() // By default Propagation.REQUIRED, So Create New Transaction
+method1(){
+// doing somethings
+}
+
+EX:2.
+@Transactional(propagation = Propagation.REQUIRED) // Create New Transaction
+method1(){
+// doing somethings
+}
+
+EX:3.
+@Transactional(propagation = Propagation.REQUIRED) // Create New Transaction
+method1(){
+call.method2();
+}
+
+// if transaction exist already, then it will use the existing Transaction(Join with existing one)
+// if transaction is not exist already, then it will Create New Transaction
+// so method2 uses the existing transaction
+@Transactional(propagation = Propagation.REQUIRED) 
+method2(){
+// doing somethings
+
+}
+
+EX:4.
+// No Transaction
+method1(){
+call.method2();
+}
+
+// if the transaction exists already, then it will use the existing Transaction(Join with the existing one)
+// if the transaction does not exist already, then it will create a new transaction
+// so method2 creates a new transaction
+@Transactional(propagation = Propagation.REQUIRED)
+method2(){
+// doing somethings
+
+}
+
+EX:5.
+// No Transaction
+method1(){
+call.method2();
+}
+
+// if the transaction exists already, then it will use the existing Transaction(Join with the existing one)
+// if the transaction does not exist already, then it will create a new transaction
+// so method2 creates a new transaction
+@Transactional(propagation = Propagation.REQUIRED)
+method2(){
+call.method3();
+}
+
+//This method will be running within the existing transaction that method 2 created.
+method3(){
+call.method4();
+}
+
+//executes within the transaction started by method2()
+method4(){
+// 
+}
+
+================================================================
+Propagation.SUPPORT -> if the transaction exist, methods will run inside the transaction. if not runs with out transaction. ex: ?
+
+
+Propagation.NotSupport -> if the transaction exist, it will suspend the transaction and come out from method and Resume the suspended one. if not runs as usual.
+
+  
+Propagation.NESTED -> it will behave like Propagation.REQUIRED but save point -> method2 failed, then it will only rollback method2 activities.
+but method one activity will not rollback. method1 activities will be saved.
+
+Propagation.REQUIRES_NEW -> it always creates new Transaction -> don't care about whether you have existing transaction or not. if transaction exist then suspend(Pause) the transaction and Resume it back.
+
+Propagation.MANDATORY -> it will only run within existing transaction , if not throw exception.
+
+Propagation.NEVER -> it will never runs within Transaction , if transaction exist it will throw exception.
+
+=================================================================
+1. Propagation.SUPPORTS
+Behavior:
+
+If a transaction exists → method runs inside it.
+
+If no transaction exists → method runs without a transaction.
+
+Example:
+
+java
+@Transactional(propagation = Propagation.SUPPORTS)
+public void methodA() {
+    // If called inside a transaction, it participates.
+    // If called outside, it just runs normally.
+}
+=================================================================
+
+2. Propagation.NOT_SUPPORTED
+Behavior:
+
+If a transaction exists → it is suspended.
+
+Method runs without a transaction.
+
+After method finishes, the suspended transaction resumes.
+
+Example:
+
+java
+@Transactional(propagation = Propagation.NOT_SUPPORTED)
+public void methodB() {
+    // Always runs without a transaction.
+    // Any existing transaction is paused until this finishes.
+}
+=================================================================
+
+3. Propagation.NESTED
+Behavior:
+
+Similar to REQUIRED (joins existing transaction).
+
+But creates a savepoint.
+
+If the nested method fails → only its changes roll back to the savepoint.
+
+Outer transaction continues.
+
+Example:
+
+java
+@Transactional(propagation = Propagation.NESTED)
+public void methodC() {
+    // Runs inside parent transaction but with a savepoint.
+    // Rollback here won’t affect parent’s work.
+}
+=================================================================
+
+4. Propagation.REQUIRES_NEW
+Behavior:
+
+Always starts a new transaction.
+
+Suspends any existing transaction until it finishes.
+
+Example:
+
+java
+@Transactional(propagation = Propagation.REQUIRES_NEW)
+public void methodD() {
+    // Always runs in a fresh transaction.
+    // Parent transaction is paused.
+}
+=================================================================
+
+5. Propagation.MANDATORY
+Behavior:
+
+Must run inside an existing transaction.
+
+If no transaction exists → throws IllegalTransactionStateException.
+
+Example:
+
+java
+@Transactional(propagation = Propagation.MANDATORY)
+public void methodE() {
+    // Requires a transaction.
+    // Will throw exception if none exists.
+}
+=================================================================
+
+6. Propagation.NEVER
+Behavior:
+
+Must run without a transaction.
+
+If a transaction exists → throws IllegalTransactionStateException.
+
+Example:
+
+java
+@Transactional(propagation = Propagation.NEVER)
+public void methodF() {
+    // Will fail if called inside a transaction.
+    // Only runs outside transaction.
+}
+=================================================================
+
+
+
+
+
+
+
+
+
